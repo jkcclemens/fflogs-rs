@@ -18,7 +18,17 @@ pub struct FfLogsError {
 #[derive(Debug, ToString, Clone, Copy)]
 pub enum ServerRegion {
   #[strum(serialize = "NA")]
-  NorthAmerica
+  NorthAmerica,
+  #[strum(serialize = "EU")]
+  Europe,
+  #[strum(serialize = "KR")]
+  Korea,
+  #[strum(serialize = "TW")]
+  Taiwan,
+  #[strum(serialize = "CN")]
+  China,
+  #[strum(serialize = "JP")]
+  Japan
 }
 
 #[derive(Debug, ToString, Clone, Copy)]
