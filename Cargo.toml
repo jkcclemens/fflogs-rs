@@ -1,0 +1,16 @@
+[package]
+name = "fflogs"
+version = "0.1.0"
+authors = ["Kyle Clemens <me@kyleclemens.com>"]
+
+[dependencies]
+serde = "1.0"
+serde_derive = "1.0"
+serde_json = "1.0"
+reqwest = "0.8"
+url = "1.7"
+strum = "0.8"
+strum_macros = "0.8"
+
+[dev-dependencies]
+dotenv = "0.11"
