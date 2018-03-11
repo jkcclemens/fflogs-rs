@@ -1,4 +1,6 @@
-# fflogs_rs
+# fflogs
+
+[![dependency status](https://deps.rs/repo/github/jkcclemens/fflogs_rs/status.svg)](https://deps.rs/repo/github/jkcclemens/fflogs_rs)
 
 Use the [FF Logs API](https://www.fflogs.com/v1/docs/) in Rust.
 
