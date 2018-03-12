@@ -68,11 +68,11 @@ impl FfLogs {
     self.download(self.make_api_url(&["classes"], None)?)
   }
 
-  pub fn rankings_character<C>(&self, name: &str, server: &str, region: ServerRegion, config: C) -> Result<Rankings>
+  pub fn rankings_character<C>(&self, name: &str, server: Server, config: C) -> Result<Rankings>
     where C: FnOnce(QueryCharacter) -> QueryCharacter
   {
     let url = self.make_api_url(
-      &["rankings", "character", name, server, &region.to_string()],
+      &["rankings", "character", name, server.as_ref(), server.region().as_ref()],
       Some(config(QueryCharacter::default()).0)
     )?;
     self.download(url)
@@ -88,21 +88,21 @@ impl FfLogs {
     self.download(url)
   }
 
-  pub fn parses<C>(&self, name: &str, server: &str, region: ServerRegion, config: C) -> Result<Parses>
+  pub fn parses<C>(&self, name: &str, server: Server, config: C) -> Result<Parses>
     where C: FnOnce(QueryParses) -> QueryParses
   {
     let url = self.make_api_url(
-      &["parses", "character", name, server, &region.to_string()],
+      &["parses", "character", name, server.as_ref(), server.region().as_ref()],
       Some(config(QueryParses::default()).0)
     )?;
     self.download(url)
   }
 
-  pub fn reports_guild<C>(&self, name: &str, server: &str, region: ServerRegion, config: C) -> Result<Reports>
+  pub fn reports_guild<C>(&self, name: &str, server: Server, config: C) -> Result<Reports>
     where C: FnOnce(QueryReports) -> QueryReports
   {
     let url = self.make_api_url(
-      &["reports", "guild", name, server, &region.to_string()],
+      &["reports", "guild", name, server.as_ref(), server.region().as_ref()],
       Some(config(QueryReports::default()).0)
     )?;
     self.download(url)
