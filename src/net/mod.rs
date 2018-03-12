@@ -10,14 +10,14 @@ pub mod reports;
 #[serde(untagged)]
 pub enum FfLogsResult<T> {
   Ok(T),
-  Err(FfLogsError)
+  Err(FfLogsError),
 }
 
 impl<T> FfLogsResult<T> {
   pub fn into_result(self) -> Result<T> {
     match self {
       FfLogsResult::Ok(t) => Ok(t),
-      FfLogsResult::Err(e) => Err(Error::FfLogs(e))
+      FfLogsResult::Err(e) => Err(Error::FfLogs(e)),
     }
   }
 }
@@ -25,7 +25,7 @@ impl<T> FfLogsResult<T> {
 #[derive(Debug, Deserialize)]
 pub struct FfLogsError {
   pub status: i64,
-  pub error: String
+  pub error: String,
 }
 
 #[derive(Debug, ToString, AsRefStr, Clone, Copy)]
@@ -123,7 +123,7 @@ impl Server {
       | Server::Hades | Server::Ixion | Server::Mandragora | Server::Masamune | Server::Pandaemonium
       | Server::Shinryu | Server::Titan
         => ServerRegion::Japan,
-      // Server::Other { name, region } => region
+      // Server::Other { name, region } => region,
     }
   }
 }
@@ -218,7 +218,7 @@ pub enum ServerRegion {
   #[strum(serialize = "CN")]
   China,
   #[strum(serialize = "JP")]
-  Japan
+  Japan,
 }
 
 #[derive(Debug, ToString, Clone, Copy)]
@@ -244,7 +244,7 @@ pub enum ReportView {
   #[strum(serialize = "resources")]
   Resources,
   #[strum(serialize = "resources-gains")]
-  ResourcesGains
+  ResourcesGains,
 }
 
 #[derive(Debug, ToString, Clone, Copy)]
@@ -266,5 +266,5 @@ pub enum Metric {
   #[strum(serialize = "tankhps")]
   TankHps,
   #[strum(serialize = "playerspeed")]
-  PlayerSpeed
+  PlayerSpeed,
 }
