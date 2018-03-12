@@ -1,3 +1,5 @@
+use errors::*;
+
 pub mod parses;
 pub mod rankings;
 pub mod reports;
@@ -7,6 +9,15 @@ pub mod reports;
 pub enum FfLogsResult<T> {
   Ok(T),
   Err(FfLogsError)
+}
+
+impl<T> FfLogsResult<T> {
+  pub fn into_result(self) -> Result<T> {
+    match self {
+      FfLogsResult::Ok(t) => Ok(t),
+      FfLogsResult::Err(e) => Err(Error::FfLogs(e))
+    }
+  }
 }
 
 #[derive(Debug, Deserialize)]

@@ -16,6 +16,7 @@ pub enum Error {
   Json(JsonError),
   Reqwest(ReqwestError),
   Url(UrlParseError),
+  UrlNotBase,
 }
 
 impl error::Error for Error {
@@ -40,6 +41,7 @@ impl Display for Error {
       Error::Json(ref e) => write!(f, "{}", e),
       Error::Reqwest(ref e) => write!(f, "{}", e),
       Error::Url(ref e) => write!(f, "{}", e),
+      Error::UrlNotBase => write!(f, "url could not be a base"),
     }
   }
 }

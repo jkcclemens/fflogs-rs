@@ -14,6 +14,7 @@ use vec_map::VecMap;
 
 use reqwest::Client;
 use serde::de::DeserializeOwned;
+use serde_json;
 use url::Url;
 
 pub struct FfLogs {
@@ -22,13 +23,20 @@ pub struct FfLogs {
 }
 
 impl FfLogs {
-  const API_BASE: &'static str = "https://www.fflogs.com/v1/";
+  // no trailing slash
+  const API_BASE: &'static str = "https://www.fflogs.com/v1";
 
-  fn make_api_url(&self, path: &str, q: Option<VecMap<&'static str, String>>) -> Result<Url> {
-    let mut url = Url::parse(FfLogs::API_BASE)
-      .map_err(Error::Url)?
-      .join(path)
-      .map_err(Error::Url)?;
+  fn make_api_url<P, S>(&self, path: P, q: Option<VecMap<&'static str, String>>) -> Result<Url>
+    where P: IntoIterator<Item=S>,
+          S: AsRef<str>
+  {
+    let mut url = Url::parse(FfLogs::API_BASE).map_err(Error::Url)?;
+    {
+      let mut segments = url.path_segments_mut().map_err(|_| Error::UrlNotBase)?;
+      for segment in path.into_iter() {
+        segments.push(segment.as_ref());
+      }
+    }
     if let Some(q) = q {
       for (key, value) in q {
         url.query_pairs_mut().append_pair(key, &value);
@@ -39,15 +47,9 @@ impl FfLogs {
   }
 
   fn download<T: DeserializeOwned>(&self, url: Url) -> Result<T> {
-    let result: FfLogsResult<T> = self.client.get(url)
-      .send()
-      .map_err(Error::Reqwest)?
-      .json()
-      .map_err(Error::Reqwest)?;
-    match result {
-      FfLogsResult::Ok(t) => Ok(t),
-      FfLogsResult::Err(e) => Err(Error::FfLogs(e))
-    }
+    let response = self.client.get(url).send().map_err(Error::Reqwest)?;
+    let result: FfLogsResult<T> = serde_json::from_reader(response).map_err(Error::Json)?;
+    result.into_result()
   }
 
   pub fn new(api_key: &str) -> FfLogs {
@@ -58,21 +60,20 @@ impl FfLogs {
   }
 
   pub fn zones(&self) -> Result<Zones> {
-    self.download(self.make_api_url("zones", None)?)
+    self.download(self.make_api_url(&["zones"], None)?)
   }
 
   pub fn classes(&self) -> Result<Classes> {
-    self.download(self.make_api_url("classes", None)?)
+    self.download(self.make_api_url(&["classes"], None)?)
   }
 
   pub fn rankings_character<C>(&self, name: &str, server: &str, region: ServerRegion, config: C) -> Result<Rankings>
     where C: FnOnce(QueryCharacter) -> QueryCharacter
   {
-    let url_str = format!("rankings/character/{name}/{server}/{region}",
-      name=name,
-      server=server,
-      region=region.to_string());
-    let url = self.make_api_url(&url_str, Some(config(QueryCharacter::default()).0))?;
+    let url = self.make_api_url(
+      &["rankings", "character", name, server, &region.to_string()],
+      Some(config(QueryCharacter::default()).0)
+    )?;
     self.download(url)
   }
 
@@ -80,7 +81,7 @@ impl FfLogs {
     where C: FnOnce(QueryEncounter) -> QueryEncounter
   {
     let url = self.make_api_url(
-      &format!("rankings/encounter/{id}", id=id),
+      &["rankings", "encounter", id],
       Some(config(QueryEncounter::default()).0)
     )?;
     self.download(url)
@@ -89,22 +90,20 @@ impl FfLogs {
   pub fn parses<C>(&self, name: &str, server: &str, region: ServerRegion, config: C) -> Result<Parses>
     where C: FnOnce(QueryParses) -> QueryParses
   {
-    let url_str = format!("parses/character/{name}/{server}/{region}",
-      name=name,
-      server=server,
-      region=region.to_string());
-    let url = self.make_api_url(&url_str, Some(config(QueryParses::default()).0))?;
+    let url = self.make_api_url(
+      &["parses", "character", name, server, &region.to_string()],
+      Some(config(QueryParses::default()).0)
+    )?;
     self.download(url)
   }
 
   pub fn reports_guild<C>(&self, name: &str, server: &str, region: ServerRegion, config: C) -> Result<Reports>
     where C: FnOnce(QueryReports) -> QueryReports
   {
-    let url_str = format!("reports/guild/{name}/{server}/{region}",
-      name=name,
-      server=server,
-      region=region.to_string());
-    let url = self.make_api_url(&url_str, Some(config(QueryReports::default()).0))?;
+    let url = self.make_api_url(
+      &["reports", "guild", name, server, &region.to_string()],
+      Some(config(QueryReports::default()).0)
+    )?;
     self.download(url)
   }
 
@@ -112,7 +111,7 @@ impl FfLogs {
     where C: FnOnce(QueryReports) -> QueryReports
   {
     let url = self.make_api_url(
-      &format!("reports/user/{name}", name=name),
+      &["reports", "user", name],
       Some(config(QueryReports::default()).0)
     )?;
     self.download(url)
@@ -122,7 +121,7 @@ impl FfLogs {
     where C: FnOnce(QueryFight) -> QueryFight
   {
     let url = self.make_api_url(
-      &format!("report/fights/{code}", code=code),
+      &["report", "fight", code],
       Some(config(QueryFight::default()).0)
     )?;
     self.download(url)
