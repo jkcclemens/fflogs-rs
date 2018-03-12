@@ -41,6 +41,13 @@ impl QueryEncounter {
     self
   }
 
+  /// Sets the job for this request.
+  ///
+  /// This is a convenience method for calling `class(1)` and `spec(job.as_usize())`.
+  pub fn job(self, job: Job) -> Self {
+    self.class(1).spec(job.as_usize())
+  }
+
   pub fn bracket(mut self, bracket: usize) -> Self {
     self.0.insert("bracket", bracket.to_string());
 

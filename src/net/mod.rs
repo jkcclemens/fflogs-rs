@@ -268,3 +268,99 @@ pub enum Metric {
   #[strum(serialize = "playerspeed")]
   PlayerSpeed,
 }
+
+#[derive(Debug, Copy, Clone)]
+#[repr(u8)]
+pub enum Job {
+  Astrologian = 1,
+  Bard = 2,
+  BlackMage = 3,
+  DarkKnight = 4,
+  Dragoon = 5,
+  Machinist = 6,
+  Monk = 7,
+  Ninja = 8,
+  Paladin = 9,
+  RedMage = 14,
+  Samurai = 15,
+  Scholar = 10,
+  Summoner = 11,
+  Warrior = 12,
+  WhiteMage = 13,
+}
+
+impl Job {
+  pub fn as_usize(&self) -> usize {
+    *self as usize
+  }
+
+  pub fn from_u8(u: usize) -> Option<Self> {
+    let job = match u {
+      1 => Job::Astrologian,
+      2 => Job::Bard,
+      3 => Job::BlackMage,
+      4 => Job::DarkKnight,
+      5 => Job::Dragoon,
+      6 => Job::Machinist,
+      7 => Job::Monk,
+      8 => Job::Ninja,
+      9 => Job::Paladin,
+      14 => Job::RedMage,
+      15 => Job::Samurai,
+      10 => Job::Scholar,
+      11 => Job::Summoner,
+      12 => Job::Warrior,
+      13 => Job::WhiteMage,
+      _ => return None
+    };
+    Some(job)
+  }
+}
+
+impl FromStr for Job {
+  type Err = String;
+
+  fn from_str(s: &str) -> ::std::result::Result<Self, Self::Err> {
+    let job = match s.to_lowercase().as_str() {
+      "astrologian" | "astro" | "ast" => Job::Astrologian,
+      "bard" | "brd" => Job::Bard,
+      "blackmage" | "black mage" | "blm" => Job::BlackMage,
+      "darkknight" | "dark knight" | "drk" => Job::DarkKnight,
+      "dragoon" | "drg" => Job::Dragoon,
+      "machinist" | "mch" => Job::Machinist,
+      "monk" | "mnk" => Job::Monk,
+      "ninja" | "nin" => Job::Ninja,
+      "paladin" | "pld" => Job::Paladin,
+      "redmage" | "red mage" | "rdm" => Job::RedMage,
+      "samurai" | "sam" => Job::Samurai,
+      "scholar" | "sch" => Job::Scholar,
+      "summoner" | "smn" => Job::Summoner,
+      "warrior" | "war" => Job::Warrior,
+      "whitemage" | "white mage" | "whm" => Job::WhiteMage,
+      x => return Err(format!("Unknown job: {}", x)),
+    };
+    Ok(job)
+  }
+}
+
+impl ToString for Job {
+  fn to_string(&self) -> String {
+    match *self {
+      Job::Astrologian => "Astrologian",
+      Job::Bard => "Bard",
+      Job::BlackMage => "Black Mage",
+      Job::DarkKnight => "Dark Knight",
+      Job::Dragoon => "Dragoon",
+      Job::Machinist => "Machinist",
+      Job::Monk => "Monk",
+      Job::Ninja => "Ninja",
+      Job::Paladin => "Paladin",
+      Job::RedMage => "Red Mage",
+      Job::Samurai => "Samurai",
+      Job::Scholar => "Scholar",
+      Job::Summoner => "Summoner",
+      Job::Warrior => "Warrior",
+      Job::WhiteMage => "White Mage",
+    }.to_string()
+  }
+}
