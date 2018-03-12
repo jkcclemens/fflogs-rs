@@ -23,8 +23,7 @@ pub struct FfLogs {
 }
 
 impl FfLogs {
-  // no trailing slash
-  const API_BASE: &'static str = "https://www.fflogs.com/v1";
+  const API_BASE: &'static str = "https://www.fflogs.com/v1/";
 
   fn make_api_url<P, S>(&self, path: P, q: Option<VecMap<&'static str, String>>) -> Result<Url>
     where P: IntoIterator<Item=S>,
@@ -33,6 +32,8 @@ impl FfLogs {
     let mut url = Url::parse(FfLogs::API_BASE).map_err(Error::Url)?;
     {
       let mut segments = url.path_segments_mut().map_err(|_| Error::UrlNotBase)?;
+      // remove trailing slash if present
+      segments.pop_if_empty();
       for segment in path.into_iter() {
         segments.push(segment.as_ref());
       }
