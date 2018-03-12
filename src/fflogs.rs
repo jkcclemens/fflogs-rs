@@ -34,7 +34,7 @@ impl FfLogs {
       let mut segments = url.path_segments_mut().map_err(|_| Error::UrlNotBase)?;
       // remove trailing slash if present
       segments.pop_if_empty();
-      for segment in path.into_iter() {
+      for segment in path {
         segments.push(segment.as_ref());
       }
     }
